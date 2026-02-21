@@ -13,36 +13,22 @@ export const metadata = {
   },
 };
 
-const themeScript = `
-(function() {
-  try {
-    var saved = localStorage.getItem('theme');
-    if (saved && ['dark','midnight','dim'].indexOf(saved) !== -1) {
-      document.documentElement.setAttribute('data-theme', saved);
-    } else {
-      var dark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-      document.documentElement.setAttribute('data-theme', dark ? 'dark' : 'dim');
-    }
-  } catch(e) {}
-})();
-`;
-
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" data-theme="dark" suppressHydrationWarning>
-      <head>
-        <script dangerouslySetInnerHTML={{ __html: themeScript }} />
-      </head>
-      <body className="flex flex-col min-h-screen antialiased" style={{ fontFamily: "'Plus Jakarta Sans', system-ui, sans-serif" }}>
-        {/* Ambient orbs */}
-        <div className="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
-          <div className="orb w-[600px] h-[600px] -top-48 -left-32" style={{ background: 'radial-gradient(circle, rgba(99,102,241,0.10), transparent 65%)' }} />
-          <div className="orb w-[400px] h-[400px] -top-16 right-0" style={{ background: 'radial-gradient(circle, rgba(59,130,246,0.07), transparent 65%)', animationDelay: '4s' }} />
-          <div className="orb w-[400px] h-[400px] bottom-0 left-1/3" style={{ background: 'radial-gradient(circle, rgba(139,92,246,0.06), transparent 65%)', animationDelay: '8s' }} />
+      <body className="flex flex-col min-h-screen bg-black text-white antialiased">
+        {/* Premium ambient background */}
+        <div className="fixed inset-0 -z-10 overflow-hidden pointer-events-none">
+          <div className="absolute top-0 left-1/4 w-[800px] h-[800px] rounded-full opacity-20" 
+            style={{ background: 'radial-gradient(circle, rgba(99, 102, 241, 0.15) 0%, transparent 70%)' }} />
+          <div className="absolute bottom-0 right-1/4 w-[600px] h-[600px] rounded-full opacity-15" 
+            style={{ background: 'radial-gradient(circle, rgba(139, 92, 246, 0.12) 0%, transparent 70%)' }} />
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[1000px] h-[1000px] rounded-full opacity-10" 
+            style={{ background: 'radial-gradient(circle, rgba(59, 130, 246, 0.1) 0%, transparent 60%)' }} />
         </div>
 
         <Header />
-        <main className="flex-grow container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
+        <main className="flex-grow">
           {children}
         </main>
         <Footer />

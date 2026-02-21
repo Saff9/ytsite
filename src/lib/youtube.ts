@@ -1,4 +1,20 @@
-const { xml2js } = require('xml-js');
+export interface Video {
+  id: string;
+  title: string;
+  thumbnail: string;
+  publishedAt: string;
+  viewCount?: string;
+}
+
+export async function getVideos(): Promise<Video[]> {
+  const videos = await fetchVideos();
+  return videos.map((v: any) => ({
+    id: v.id,
+    title: v.title,
+    thumbnail: v.thumbnail,
+    publishedAt: v.published,
+  }));
+}
 
 export async function fetchVideos(): Promise<any[]> {
   const channelId = process.env.NEXT_PUBLIC_YOUTUBE_CHANNEL_ID;
@@ -8,18 +24,35 @@ export async function fetchVideos(): Promise<any[]> {
     return [];
   }
 
-  const res = await fetch(`https://www.youtube.com/feeds/videos.xml?channel_id=${channelId}`);
-  const xml = await res.text();
-  // Simple XML to JSON conversion (placeholder)
-  const result = xml2js(xml, { compact: true, ignoreDeclaration: true }) as any;
-  // Extract entries
-  const entries = result.feed?.entry ?? [];
-  // Normalize to array
-  const videos = Array.isArray(entries) ? entries : [entries];
-  return videos.map((v: any) => ({
-    id: v['yt:videoId']?._text,
-    title: v.title._text,
-    thumbnail: `https://i.ytimg.com/vi/${v['yt:videoId']?._text}/hqdefault.jpg`,
-    published: v.published._text,
-  }));
+  try {
+    const res = await fetch(`https://www.youtube.com/feeds/videos.xml?channel_id=${channelId}`);
+    const xml = await res.text();
+    
+    // Simple XML parsing without external library
+    const videos: any[] = [];
+    const entryRegex = /<entry>([\s\S]*?)<\/entry>/g;
+    let match;
+    
+    while ((match = entryRegex.exec(xml)) !== null) {
+      const entry = match[1];
+      const videoIdMatch = /<yt:videoId>(.*?)<\/yt:videoId>/.exec(entry);
+      const titleMatch = /<title>(.*?)<\/title>/.exec(entry);
+      const publishedMatch = /<published>(.*?)<\/published>/.exec(entry);
+      
+      if (videoIdMatch && titleMatch) {
+        const videoId = videoIdMatch[1];
+        videos.push({
+          id: videoId,
+          title: titleMatch[1],
+          thumbnail: `https://i.ytimg.com/vi/${videoId}/hqdefault.jpg`,
+          published: publishedMatch ? publishedMatch[1] : new Date().toISOString(),
+        });
+      }
+    }
+    
+    return videos;
+  } catch (error) {
+    console.error('Error fetching videos:', error);
+    return [];
+  }
 }

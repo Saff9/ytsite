@@ -12,13 +12,12 @@ const navLinks = [
 
 const themes = ["dark", "midnight", "dim"] as const;
 type Theme = (typeof themes)[number];
-const themeIcons: Record<Theme, string> = { dark: "🌑", midnight: "🌊", dim: "🌗" };
+const themeIcons: Record<Theme, string> = { dark: "◑", midnight: "◐", dim: "○" };
 
 function ThemeToggle() {
   const [theme, setTheme] = useState<Theme>("dark");
 
   useEffect(() => {
-    // Auto-detect: if system prefers light → use dim; otherwise saved or dark
     const saved = localStorage.getItem("theme") as Theme | null;
     if (saved && themes.includes(saved)) {
       setTheme(saved);
@@ -42,11 +41,10 @@ function ThemeToggle() {
   return (
     <button
       onClick={cycle}
-      className="theme-btn"
+      className="w-9 h-9 flex items-center justify-center text-sm text-white/60 hover:text-white hover:bg-white/5 rounded-full transition-all"
       aria-label={`Theme: ${theme}`}
-      title={`Theme: ${theme} — click to switch`}
     >
-      <span className="text-sm">{themeIcons[theme]}</span>
+      {themeIcons[theme]}
     </button>
   );
 }
@@ -57,115 +55,109 @@ export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 10);
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 20);
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
   return (
-    <header className="sticky top-0 z-50 flex justify-center px-4 pt-3 pb-1">
+    <header
+      className={`fixed top-4 left-4 right-4 z-50 transition-all duration-300 ${
+        scrolled ? "mt-0" : "mt-2"
+      }`}
+    >
       <div
-        className={`glass-nav w-full max-w-5xl transition-all duration-400 ${scrolled ? "rounded-full px-5" : "rounded-[1.75rem] px-6"
-          }`}
+        className={`mx-auto max-w-6xl transition-all duration-300 ${
+          scrolled ? "glass-nav rounded-2xl" : ""
+        }`}
+        style={{ padding: scrolled ? "0.75rem 1.5rem" : "1rem 0" }}
       >
-        <div className="flex items-center justify-between gap-4" style={{ height: 54 }}>
-
+        <nav className="flex items-center justify-between">
           {/* Logo */}
-          <Link href="/" className="flex items-center gap-2.5 group flex-shrink-0">
-            <div
-              className="w-9 h-9 rounded-xl flex items-center justify-center font-extrabold text-sm text-white"
-              style={{
-                background: "linear-gradient(135deg, var(--accent), #4f46e5)",
-                backgroundSize: "300% 300%",
-                animation: "gradientSpin 6s linear infinite",
-                boxShadow: `0 0 18px var(--accent-glow)`,
-                border: "1px solid rgba(255,255,255,0.10)",
-              }}
-            >
-              G
-            </div>
-            <span className="text-lg font-bold tracking-tight" style={{ fontFamily: "'Syne', sans-serif", color: "var(--text)" }}>
-              Genzowais
-            </span>
+          <Link
+            href="/"
+            className="text-xl font-semibold text-white hover:opacity-80 transition-opacity"
+          >
+            Genzowais
           </Link>
 
-          {/* Desktop nav */}
-          <nav className="hidden md:flex items-center gap-1 flex-1 justify-center">
-            {navLinks.map(({ href, label }) => {
-              const active = pathname === href;
-              return (
-                <Link
-                  key={href}
-                  href={href}
-                  className="relative px-4 py-1.5 text-sm font-medium rounded-full transition-all duration-250"
-                  style={{
-                    color: active ? "var(--accent-2)" : "var(--text-3)",
-                    background: active ? "rgba(99,102,241,0.12)" : "transparent",
-                    border: active ? "1px solid rgba(99,102,241,0.25)" : "1px solid transparent",
-                  }}
-                >
-                  {label}
-                </Link>
-              );
-            })}
-          </nav>
+          {/* Desktop Nav */}
+          <div className="hidden md:flex items-center gap-1">
+            {navLinks.map((link) => (
+              <Link
+                key={link.href}
+                href={link.href}
+                className={`px-4 py-2 text-sm font-medium rounded-xl transition-all ${
+                  pathname === link.href
+                    ? "bg-white/10 text-white"
+                    : "text-white/60 hover:text-white hover:bg-white/5"
+                }`}
+              >
+                {link.label}
+              </Link>
+            ))}
+          </div>
 
-          {/* Right controls */}
-          <div className="flex items-center gap-2.5 flex-shrink-0">
-            <ThemeToggle />
-
+          {/* Right side */}
+          <div className="flex items-center gap-3">
             <a
               href="https://www.youtube.com/@genzowais?sub_confirmation=1"
               target="_blank"
               rel="noopener noreferrer"
-              className="hidden sm:inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full text-xs font-bold text-white btn-glow"
-              style={{
-                background: "linear-gradient(135deg, #dc2626, #b91c1c)",
-                boxShadow: "0 4px 16px var(--red-glow)",
-                border: "1px solid rgba(255,255,255,0.08)",
-              }}
+              className="hidden sm:inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-medium bg-red-600 text-white hover:bg-red-500 transition-all"
             >
-              <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
-              </svg>
               Subscribe
             </a>
+            <ThemeToggle />
 
-            {/* Mobile hamburger */}
+            {/* Mobile menu button */}
             <button
+              className="md:hidden w-9 h-9 flex items-center justify-center text-white/60 hover:text-white rounded-full hover:bg-white/5 transition-all"
               onClick={() => setMenuOpen(!menuOpen)}
-              className="md:hidden theme-btn"
               aria-label="Toggle menu"
             >
-              <div className="flex flex-col gap-1">
-                <span className="block w-3.5 h-px transition-all duration-200" style={{ background: "var(--text)", transform: menuOpen ? "rotate(45deg) translateY(3px)" : "none" }} />
-                <span className="block w-3.5 h-px transition-all duration-200" style={{ background: "var(--text)", opacity: menuOpen ? 0 : 1 }} />
-                <span className="block w-3.5 h-px transition-all duration-200" style={{ background: "var(--text)", transform: menuOpen ? "rotate(-45deg) translateY(-3px)" : "none" }} />
-              </div>
+              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                {menuOpen ? (
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M6 18L18 6M6 6l12 12" />
+                ) : (
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 6h16M4 12h16M4 18h16" />
+                )}
+              </svg>
             </button>
           </div>
-        </div>
+        </nav>
 
         {/* Mobile menu */}
-        <div className={`md:hidden overflow-hidden transition-all duration-300 ${menuOpen ? "max-h-72 pb-3" : "max-h-0"}`}>
-          <div className="rounded-2xl p-2 flex flex-col gap-1 mt-1" style={{ background: "rgba(0,0,0,0.5)", border: "1px solid var(--glass-bdr)", backdropFilter: "blur(20px)" }}>
-            {navLinks.map(({ href, label }) => {
-              const active = pathname === href;
-              return (
-                <Link key={href} href={href} onClick={() => setMenuOpen(false)}
-                  className="px-4 py-2.5 rounded-xl text-sm font-medium transition-all"
-                  style={{ color: active ? "var(--accent-2)" : "var(--text-3)", background: active ? "rgba(99,102,241,0.12)" : "transparent" }}
-                >{label}</Link>
-              );
-            })}
-            <a href="https://www.youtube.com/@genzowais?sub_confirmation=1" target="_blank" rel="noopener noreferrer" onClick={() => setMenuOpen(false)}
-              className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold text-white mt-1"
-              style={{ background: "linear-gradient(135deg, #dc2626, #b91c1c)" }}>
-              <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" /></svg>
-              Subscribe on YouTube
-            </a>
+        {menuOpen && (
+          <div className="md:hidden mt-4 pt-4 border-t border-white/10">
+            <div className="flex flex-col gap-1">
+              {navLinks.map((link) => (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  onClick={() => setMenuOpen(false)}
+                  className={`px-4 py-3 text-sm font-medium rounded-xl transition-all ${
+                    pathname === link.href
+                      ? "bg-white/10 text-white"
+                      : "text-white/60 hover:text-white hover:bg-white/5"
+                  }`}
+                >
+                  {link.label}
+                </Link>
+              ))}
+              <a
+                href="https://www.youtube.com/@genzowais?sub_confirmation=1"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center justify-center gap-1.5 px-4 py-3 mt-2 rounded-xl text-sm font-medium bg-red-600 text-white hover:bg-red-500 transition-all"
+              >
+                Subscribe
+              </a>
+            </div>
           </div>
-        </div>
+        )}
       </div>
     </header>
   );
