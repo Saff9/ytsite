@@ -16,6 +16,10 @@ export const metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" data-theme="dark" suppressHydrationWarning>
+      <head>
+        {/* Google AdSense */}
+        <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2054366626825410" crossOrigin="anonymous" />
+      </head>
       <body className="flex flex-col min-h-screen bg-black text-white antialiased">
         {/* Premium ambient background */}
         <div className="fixed inset-0 -z-10 overflow-hidden pointer-events-none">
@@ -32,6 +36,18 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           {children}
         </main>
         <Footer />
+        
+        {/* Google AdSense Auto Ads */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              (adsbygoogle = window.adsbygoogle || []).push({
+                google_ad_client: "ca-pub-2054366626825410",
+                enable_page_level_ads: true
+              });
+            `,
+          }}
+        />
       </body>
     </html>
   );
