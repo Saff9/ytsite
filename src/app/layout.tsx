@@ -10,6 +10,9 @@ export const metadata = {
   icons: {
     icon: '/favicon.svg',
     apple: '/icon.svg',
+  }, 
+  other: {
+    '7searchppc': '0a09bf751224fe06826230f37591fb76',
   },
 };
 
