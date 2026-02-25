@@ -22,6 +22,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <head>
         {/* Google AdSense */}
         <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2054366626825410" crossOrigin="anonymous" />
+        {/* Banner Ad Script */}
+        <script async data-cfasync="false" src="https://pl28791059.effectivegatecpm.com/0468e4bd50315776ced555d5c77276f3/invoke.js"></script>
       </head>
       <body className="flex flex-col min-h-screen bg-black text-white antialiased">
         {/* Premium ambient background */}
